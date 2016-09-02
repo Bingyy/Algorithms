@@ -1,0 +1,8 @@
+#include<stdio.h>
+int main()
+{
+	itn n, count = 0;
+	
+	printf("%s\n","test");
+	return 0;
+}
