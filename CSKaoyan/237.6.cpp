@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <vector>
+#include <algorithm>
 
 
 using namespace std;
@@ -38,47 +39,73 @@ List generateList(int n)
 	return Head;
 }
 
-void reverse(List &Head)
+
+void sortList(List &Head)
 {
-	//第一种想法：将后面的每一个结点插入到前面的结点前面即可
-	//这是我的想法，调试了很多次才理顺
+	//借助一个数组存储元素的值，然后再遍历链表重新赋值
+	// 就是把排序的事情交给sort去做了
 
-	Node *p = Head->next; //当前工作结点
-	Node *after = p->next; //工作结点的后继结点
-	p->next = NULL; //第一个工作结点的指针域将为空
-
-	while(after)//后继结点还有值得时候
-	{
-		Node *temp = after->next;
-		after->next = p;
-		Head->next = after;
-
-		//更新p和after的值，即：p指向after,after指向after后面的项
-		p = after;
-		after = temp;
-	}
-}
-
-void reverse2(List &Head)
-{
-	// 答案提供了这个做法
-	// 事实上更易想到
-	List r;
-	Node *p = Head->next;//工作指针
-	Head->next = NULL;//头结点指针域设为空
-
+	vector<int> ins;
+	Node *p = Head->next; //指向工作结点
 	while(p)
 	{
-		r = p->next; //暂存p的后继
-		p->next = Head->next;
-		Head->next = p;
-		p = r;
+		ins.push_back(p->data);
+		p = p->next;
+	}
+
+	sort(ins.begin(), ins.end()); // 使得ins中的数据递增有序
+
+	p = Head->next;
+	int i = 0;
+	while(p)
+	{
+		p->data = ins[i];
+		p = p->next;
+		i++;
 	}
 }
 
+// void sortListByHand(List &Head)
+// {
+// 	// 不是这样简单的，类似选择排序，需要不断与前面已经相排好序的再比较
+// 	// 主要思路是，新建一个链表，每次扫描的结点与当前结点比较，如果较大，就插在工作结点后面，否则就在前面
+// 	// 因此需要跟踪两个结点：当前工作结点和前驱结点
+// 有待update -- 思路没理清
+
+// 	Node *p = Head->next;
+// 	Node *pre = Head;
+
+// 	while(p)
+// 	{
+// 		Node *after = p->next; // p之后的结点
+
+// 		if(after == NULL)
+// 		{
+// 			break;
+// 		}
+
+// 		if(p->data <= after->data) //否则就插到后面
+// 		{
+// 			pre = p;
+// 			p = after;	
+// 		}
+
+// 		else if(p->data > after->data)//第二个结点值较小，插到前面
+// 		{
+// 			Node *temp = after->next; // 暂存after后的结点，after的链要更改
+// 			after->next = p;
+// 			pre->next = after;
+// 			p->next = NULL;
+
+// 			p = temp;
+// 			pre = after;
+// 		}
+		
+// 	} 
+// }
 int main()
 {
-	// 辅助空间为O(1)，就地逆置带头单链表
+	//设计算法使得带头节点的链表递增有序
 
 	int n;
 	cout << "Input a number of nodes: ";
@@ -95,6 +122,8 @@ int main()
 
 	//写题目的主要逻辑
 
+	sortList(Head);
+	// sortListByHand(Head);
 
 	p = Head->next;
 	while(p)
@@ -102,6 +131,7 @@ int main()
 		cout << p->data << " ";
 		p = p->next;
 	}
+
 	cout << endl;
 
 	return 0;
